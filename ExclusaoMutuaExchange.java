@@ -33,13 +33,10 @@ public class ExclusaoMutuaExchange {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        if (args.length != 1 || !(args[0].equals("0") || args[0].equals("1"))) {
-            System.out.println("Uso: java ExclusaoMutuaExchange <0|1>");
-            System.out.println("  0 = sem exclusao mutua | 1 = com exclusao mutua (EXCHANGE)");
-            return;
-        }
-        usarExclusao = args[0].equals("1");
+    static void rodar(boolean comExclusao) throws InterruptedException {
+        usarExclusao = comExclusao;
+        contador = 0;
+        lock.set(0);
 
         Thread t1 = new Thread(ExclusaoMutuaExchange::trabalhar);
         Thread t2 = new Thread(ExclusaoMutuaExchange::trabalhar);
@@ -49,9 +46,15 @@ public class ExclusaoMutuaExchange {
         t1.join();
         t2.join();
 
-        System.out.println(usarExclusao ? "COM exclusao mutua (EXCHANGE)" : "SEM exclusao mutua");
+        System.out.println();
+        System.out.println(comExclusao ? "=== COM exclusao mutua (EXCHANGE) ===" : "=== SEM exclusao mutua ===");
         System.out.println("Esperado: " + (2 * VEZES));
         System.out.println("Obtido:   " + contador);
         System.out.println(contador == 2 * VEZES ? "Resultado CORRETO" : "Resultado ERRADO (condicao de corrida)");
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        rodar(false);
+        rodar(true);
     }
 }
